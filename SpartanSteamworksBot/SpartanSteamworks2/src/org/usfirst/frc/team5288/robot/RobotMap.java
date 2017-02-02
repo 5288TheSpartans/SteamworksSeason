@@ -34,10 +34,9 @@ public class RobotMap {
 		public static double rotateI = 0;
 		public static double rotateD = 0;
 	//Shooter
-		//Shooter Motors(PWM)
-		public static int ShooterMotor = 4;
-		//Shooter Sensors(D I/O)
-		public static int ShooterEncoder = 4;
+		//Shooter Motors(CAN)
+		public static int ShooterMotor = 1;
+		 
 		//Shooter Constants - (KG/M/Rad)
 		public static double frictionConstant = 0.0714507874015;
 		public static double frictionM =  0.074;
@@ -47,7 +46,7 @@ public class RobotMap {
 	    public static double shooterHardstopSpeed =  15;
 	    public static double shooterangle = 1;
 
-	    //Shooter PID Constants 
+	    //Shooter Hardstop PID Constants 
 	    public static double shooterPGain = 0.8;
 	    public static double shooterIGain = 0;
 	    public static double shooterDGain = 0;

@@ -21,9 +21,9 @@ public class OI {
     Joystick xbox = new Joystick(2);
     
  	private JoystickButton btnL1 = new JoystickButton(joystickLeft,1),
- 					btnL2= new JoystickButton(joystickLeft,2),
-					btnL3 = new JoystickButton(joystickLeft,3),
-					btnL4 = new JoystickButton(joystickLeft,4),
+ 					btnLowThrottle = new JoystickButton(joystickLeft,2),
+					btnHighThrottle = new JoystickButton(joystickLeft,3),
+					btnDriveToPosition = new JoystickButton(joystickLeft,4),
 					btnL5 = new JoystickButton(joystickLeft,5),
 					btnL6 = new JoystickButton(joystickLeft,6),
  					btnL7 = new JoystickButton(joystickLeft,7),
@@ -72,15 +72,18 @@ public class OI {
     // Start the command when the button is released  and let it run the command
     // until it is finished as determined by it's isFinished method.
     // button.whenReleased(new ExampleCommand());
+    	//btnDriveToPosition.whenPressed();
+    	//btnTurnAngle.whenPressed();
+    	//btn
     	//Shooter Buttons
-   
     	/*btnL3.whileHeld(new ManualShooterUp());
-    btnL2.whileHeld(new ManualShooterDown());
-    btnL1.whenPressed(new IntakeBall());
-    btnR1.whileHeld(new PrepareBall());
-    btnR2.whileHeld(new ShootBall());
-    btnR9.whileHeld(new DriveStraight());
-    btnx1.whileHeld(new AimToShoot());
+    	 * btnL2.whileHeld(new ManualShooterDown());
+    	 * btnL1.whenPressed(new IntakeBall());
+    	 * btnR1.whileHeld(new PrepareBall());
+    	 * btnR2.whileHeld(new ShootBall());
+    	 * btnR9.whileHeld(new DriveStraight());
+    	 * btnx1.whileHeld(new AimToShoot());
+    	 * btn
    */
     //-----------------------------Code for returning Joystick Axis--------------------------
     
@@ -121,7 +124,7 @@ public class OI {
     }
     public double getRightStickThrottle()
     {
-    	
+    	return(joystickRight.getThrottle());
     }
 }	
 

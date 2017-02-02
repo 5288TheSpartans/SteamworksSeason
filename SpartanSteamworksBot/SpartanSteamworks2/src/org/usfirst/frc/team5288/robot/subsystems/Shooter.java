@@ -14,10 +14,8 @@ public class Shooter extends Subsystem {
 	// TALON SRX and encoder
 	 CANTalon shooterTalon = new CANTalon(RobotMap.ShooterMotor);
 	//Encoder Tracking variables
-
 	private double encLast = 0;
 	private double encCurrent = 0;
-	private double encDiff;//diffEncValue = EncV2 - encv1;
 	//Time tracking
 	private double timeLast = 0;
 	private double timeCurrent = 0;
@@ -31,9 +29,9 @@ public class Shooter extends Subsystem {
 	private double lastAccel = 0;
 	private double diffAccel = 0;
 	public Shooter(){
-		shooterTalon.changeControlMode(CANTalon.TalonControlMode.Voltage);
         /* first choose the sensor */
         shooterTalon.setFeedbackDevice(FeedbackDevice.CtreMagEncoder_Relative);
+		shooterTalon.changeControlMode(CANTalon.TalonControlMode.Speed);
         shooterTalon.reverseSensor(false);
         //shooterTalon.configEncoderCodesPerRev(XXX), // if using FeedbackDevice.QuadEncoder
         //shooterTalon.configPotentiometerTurns(XXX), // if using FeedbackDevice.AnalogEncoder or AnalogPot
@@ -41,6 +39,7 @@ public class Shooter extends Subsystem {
         /* set the peak and nominal outputs, 12V means full */
         shooterTalon.configNominalOutputVoltage(+0.0f, -0.0f);
         shooterTalon.configPeakOutputVoltage(+12.0f, 0.0f);
+        /* set th encoder's starting position to 0*/
         /* set closed loop gains in slot0 */
         shooterTalon.setProfile(0);
         shooterTalon.setF(0.1097);
@@ -59,6 +58,11 @@ public class Shooter extends Subsystem {
 		updateValues();
 		updateOutputs();
 	}
+/*
+ *This code is used to calculate the speed and acceleration of the shooter wheel. 
+ *The code also calculates the current difference in acceleration, to see what the wheel's
+ *maximum available velocity is.
+*/
     public void updateValues(){
     	//Load last Values
     		lastSpeed = currentSpeed;
@@ -70,9 +74,7 @@ public class Shooter extends Subsystem {
     	//Calculate New Values
     		//Calculate time difference
     		timeCurrent = System.currentTimeMillis();
-    		//Calculate encoder difference
-    	
-    		encLast = encCurrent;
+    		timeDiff = timeCurrent - timeLast;
     		//calculate Current Speed
     		currentSpeed = (encCurrent-encLast)/timeDiff;
     		//******Calculate Acceleration and difference in acceleration******
@@ -86,11 +88,10 @@ public class Shooter extends Subsystem {
     	
     }
     private void updateOutputs(){
-    	
+    
     }
-    private void setTargetSpeed(){
-    	
-    	
+    private void setTargetSpeed(double newtargetspeed){
+    	targetSpeed = newtargetspeed;
     }
 
 	public void setForcedPower(){

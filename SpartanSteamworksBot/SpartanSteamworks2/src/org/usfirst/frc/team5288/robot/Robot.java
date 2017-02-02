@@ -1,15 +1,19 @@
 
 package org.usfirst.frc.team5288.robot;
 
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
+import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team5288.robot.commands.*;
 import org.usfirst.frc.team5288.robot.subsystems.*;
+
+import Accessories.ArduinoComms;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -20,11 +24,15 @@ import org.usfirst.frc.team5288.robot.subsystems.*;
  */
 public class Robot extends IterativeRobot {
 
+	/**
+	 * Robot objects, holds the subsystems, OI, and comms devices.
+	 */
 	public static final Drivetrain drivetrain = new Drivetrain();
 	public static final Intake intake = new Intake();
-	public static final Shooter = new Shooter();
-	public static OI oi;
-	
+	public static final Shooter shooter= new Shooter();
+	public static final OI oi = new OI();
+	public static final ArduinoComms arduino = new ArduinoComms();
+	public static NetworkTable table;
 	SendableChooser<Command> chooser = new SendableChooser<>();
 
 	/**
@@ -33,10 +41,11 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void robotInit() {
-		oi = new OI();
+		initNetworkTable();
 		//chooser.addDefault("Default Auto", new ExampleCommand());
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
+	 ;
 	}
 
 	/**
@@ -122,12 +131,15 @@ public class Robot extends IterativeRobot {
 		drivetrain.update();
 		shooter.update();
 		intake.update();
+		arduino.changeMode(ArduinoComms.LightsMode.Red);
 		//climber.update();
-		//TODO: MAKE SHOOTER CLASS
 	}
 	public void updateNetworkTables(){
 		//TODO: MAKE NETWORKTABLES CLASS
-		shooter.u
+	}
+	public void initNetworkTable()
+	{
+		
 	}
 	
 }
