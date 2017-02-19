@@ -1,7 +1,5 @@
 package org.usfirst.frc.team5288.robot;
 
-import edu.wpi.first.wpilibj.buttons.Button;
-
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.Joystick;
 
@@ -41,7 +39,7 @@ public class OI {
  				btnR10 = new JoystickButton(joystickRight,10),
  		 		btnR11 = new JoystickButton(joystickRight,1); 
  	private JoystickButton xBoxB = new JoystickButton(xbox,0),
-			 xBoxA= new JoystickButton(xbox,1),
+			 xboxA= new JoystickButton(xbox,1),
 			xboxY = new JoystickButton(xbox,2),
 			xboxX = new JoystickButton(xbox,3),
 			xboxLB = new JoystickButton(xbox,6),
@@ -51,8 +49,12 @@ public class OI {
 		 	
 
     public OI()
-    {    	
-    		
+    {
+   
+    //Shooter Commands
+    btnR3.toggleWhenPressed(new ParkAndShoot());
+    btnR4.toggleWhenPressed(new IntakeBalls());
+   // btnR1.toggleWhenPressed(new DriveStraight());
     // There are a few additional built in buttons you can use. Additionally,
     // by subclassing Button you can create custom triggers and bind those to
     // commands the same as any other Button.
@@ -85,6 +87,7 @@ public class OI {
     	 * btnx1.whileHeld(new AimToShoot());
     	 * btn
    */
+    	
     //-----------------------------Code for returning Joystick Axis--------------------------
     
     }

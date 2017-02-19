@@ -1,6 +1,6 @@
 
 package org.usfirst.frc.team5288.robot;
-
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -10,11 +10,12 @@ import edu.wpi.first.wpilibj.networktables.NetworkTable;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import org.usfirst.frc.team5288.robot.autoCommands.driveDistanceStraight;
 import org.usfirst.frc.team5288.robot.commands.*;
 import org.usfirst.frc.team5288.robot.subsystems.*;
 
 import Accessories.ArduinoComms;
-
+import Accessories.VisionCalculator;
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to each mode, as described in the IterativeRobot
@@ -33,19 +34,19 @@ public class Robot extends IterativeRobot {
 	public static final OI oi = new OI();
 	public static final ArduinoComms arduino = new ArduinoComms();
 	public static NetworkTable table;
-	SendableChooser<Command> chooser = new SendableChooser<>();
-
+	public static SendableChooser<Command> chooser = new SendableChooser<>();
+	public static  VisionCalculator gearCalc =  new VisionCalculator();
+	
+	public int ultrasonicDistance = 0;
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	@Override
 	public void robotInit() {
-		initNetworkTable();
-		//chooser.addDefault("Default Auto", new ExampleCommand());
+		chooser.addDefault("centerGearAuto", new driveDistanceStraight(100));
 		// chooser.addObject("My Auto", new MyAutoCommand());
 		SmartDashboard.putData("Auto mode", chooser);
-	 ;
 	}
 
 	/**
@@ -59,8 +60,12 @@ public class Robot extends IterativeRobot {
 	}
 
 	@Override
+	/**
+	 * This function is called periodically each time the robot completes a cycle of code during Disabled mode.
+	 */
 	public void disabledPeriodic() {
-		Scheduler.getInstance().run();
+		drivetrain.resetEncoders();
+		updateSubsystems();	
 	}
 
 	/**
@@ -97,7 +102,6 @@ public class Robot extends IterativeRobot {
 	public void autonomousPeriodic() {
 		Scheduler.getInstance().run();
 		updateSubsystems();
-		updateNetworkTables();
 	}
 
 	@Override
@@ -108,6 +112,8 @@ public class Robot extends IterativeRobot {
 		// this line or comment it out.
 		//if (autonomousCommand != null)
 		///	autonomousCommand.cancel();
+		updateSubsystems();
+
 	}
 
 	/**
@@ -117,7 +123,6 @@ public class Robot extends IterativeRobot {
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		updateSubsystems();
-		updateNetworkTables();
 	}
 
 	/**
@@ -125,21 +130,47 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void testPeriodic() {
-		LiveWindow.run();
+		updateSubsystems();
 	}
 	public void updateSubsystems(){
 		drivetrain.update();
 		shooter.update();
 		intake.update();
 		arduino.changeMode(ArduinoComms.LightsMode.Red);
+		gearCalc.Updatedata();
+		//System.out.println("Gear peg distance(inches) = " + gearCalc.getDistance());
 		//climber.update();
 	}
-	public void updateNetworkTables(){
-		//TODO: MAKE NETWORKTABLES CLASS
-	}
-	public void initNetworkTable()
+	
+	/**
+	 * A private method for parsing Ultrasonic data
+	 * 
+	 * @param data The data to parse
+	 * @return The double value representation the distance to the facing wall in mm
+	 */
+	/*
+	private double parseUltrasonicData(String data)
 	{
+		//Make sure the most recent data value sent is fully formed
+		//If it's not, remove the non-fully formed version
+		if(data.lastIndexOf("\r", data.lastIndexOf("R")) == -1)
+		{
+			data = data.substring(0, data.lastIndexOf("R"));
+		}
 		
-	}
+		//Parse the data and return the Double result
+		return Double.parseDouble(data.substring(data.lastIndexOf("R") + 1, data.lastIndexOf("\r")));
+	}*/
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 }

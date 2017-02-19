@@ -3,7 +3,7 @@ package Accessories;
 import edu.wpi.first.wpilibj.I2C;
 import org.usfirst.frc.team5288.robot.RobotMap;
 public class ArduinoComms {
-	
+	int counter = 0;
     public enum LightsMode {
         Yellow,
         PulsatingYellow,
@@ -20,7 +20,6 @@ public class ArduinoComms {
     }
 
     private I2C _arduino;
-
     public ArduinoComms() {
         this._arduino = new I2C(I2C.Port.kMXP, RobotMap.ArduinoPort);
     }

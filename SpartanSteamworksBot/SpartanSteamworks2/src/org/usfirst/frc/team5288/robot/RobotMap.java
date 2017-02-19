@@ -17,15 +17,17 @@ public class RobotMap {
 	
 	// Drivetrain
 		//Drivetrain motors (PWM)
-		public static int LDriveMotor1 = 0;
-		public static int LDriveMotor2 = 1;
-		public static int RDriveMotor1 = 2;
-		public static int RDriveMotor2 = 3;
+		public static int LDriveMotor1 = 2;
+		public static int LDriveMotor2 = 3;
+		public static int RDriveMotor1 = 0;
+		public static int RDriveMotor2 = 1;
 		// Drivetrain Sensors (D I/O)
 		public static int LDriveEncoder1 = 0;
 		public static int LDriveEncoder2 = 1;
-		public static int RDriveEncoder1 = 2;
-		public static int RDriveEncoder2 = 3;
+		public static int LDriveEncoderIndex = 2;
+		public static int RDriveEncoder1 = 3;
+		public static int RDriveEncoder2 = 4;
+		public static int RDriveEncoderIndex = 5;
 		//Drivetrain PID Constants
 		public static double straightP = 0.6;
 		public static double straightI = 0;
@@ -52,7 +54,7 @@ public class RobotMap {
 	    public static double shooterDGain = 0;
 	//Intake
 	    //Intake motors
-	    public static double intakeMotor = 5;
+	    public static int intakeMotor = 5;
 	    public static double intakePower = 0.5;
 	    public static double intakePowerScaler = 13;
 	    //This constant will be used by dividing the speed of the drivetrain by the speed of the intake and adding it to the power.

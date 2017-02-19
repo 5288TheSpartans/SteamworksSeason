@@ -1,4 +1,4 @@
-package org.usfirst.frc.team5288.robot.commands;
+package org.usfirst.frc.team5288.robot.commands.DriveCommands;
 
 import org.usfirst.frc.team5288.robot.Robot;
 import org.usfirst.frc.team5288.robot.RobotMap;
@@ -10,8 +10,6 @@ import edu.wpi.first.wpilibj.command.Command;
  */
 public class ManualDrive extends Command {
 
-	
-	public double throttle = 1;
 	public ManualDrive() {
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires();
@@ -32,7 +30,7 @@ public class ManualDrive extends Command {
 		 * respective sides of the robot's drivetrain, outputting power equal to
 		 * the raw input multiplied by the throttle multiplier, allowing for 
 		 * extremely precise movements.
-		 * ************THE ABOVE HAS BEEN DEPRECATED FOR THE 2017 B
+		 * ************THE ABOVE HAS BEEN DEPRECATED FOR THE 2017 BOT
 		 */
 		
 		
@@ -43,17 +41,17 @@ public class ManualDrive extends Command {
 		//Left Side 
 		if(Robot.oi.getLeftStickX() <= RobotMap.JOYSAFEZONE || Robot.oi.getLeftStickX() >= -RobotMap.JOYSAFEZONE)//checks if the joystick is in RobotMap.JOYSAFEZONE
 		{
-			Robot.drivetrain.setLPower(throttle*(Robot.oi.getLeftStickY()));
+			Robot.drivetrain.setLPower(Robot.oi.getLeftStickY());
 		}
 		else// if the joystick Y value is in the RobotMap.JOYSAFEZONE, sets the robot's left motor to 0 output
 		{
-			Robot.drivetrain.setRPower(0);
+			Robot.drivetrain.setLPower(0);
 		}
 		//Right Side
-		if(Robot.oi.getRightStickY() >= RobotMap.JOYSAFEZONE || Robot.oi.getRightStickY() <= (-1)*RobotMap.JOYSAFEZONE)//checks if the joystick is in RobotMap.JOYSAFEZONE
+		if(Robot.oi.getRightStickY() >= RobotMap.JOYSAFEZONE || Robot.oi.getRightStickY() <= -RobotMap.JOYSAFEZONE)//checks if the joystick is in RobotMap.JOYSAFEZONE
 		{
 			//sets the robots' right speed through a method declared in the drive subystem
-			Robot.drivetrain.setRPower(throttle*(-Robot.oi.getRightStickY()));
+			Robot.drivetrain.setRPower(Robot.oi.getRightStickY());
 		}
 		else
 		{
