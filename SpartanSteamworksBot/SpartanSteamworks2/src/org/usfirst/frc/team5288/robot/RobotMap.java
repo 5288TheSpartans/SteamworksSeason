@@ -59,7 +59,8 @@ public class RobotMap {
 	    public static double intakePowerScaler = 13;
 	    //This constant will be used by dividing the speed of the drivetrain by the speed of the intake and adding it to the power.
 	 //Climber
-	    
+	    public static int climberMotorL = 6;
+	    public static int climberMotorR = 7;
 	 //Arduino
 	    public static int ArduinoPort = 1;
 	 // public static int Motor

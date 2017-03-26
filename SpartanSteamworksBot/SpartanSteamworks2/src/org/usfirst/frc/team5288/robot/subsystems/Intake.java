@@ -3,7 +3,7 @@ package org.usfirst.frc.team5288.robot.subsystems;
 import edu.wpi.first.wpilibj.command.Subsystem;
 
 import org.usfirst.frc.team5288.robot.RobotMap;
-import org.usfirst.frc.team5288.robot.commands.intakeStandbyCommand;
+import org.usfirst.frc.team5288.robot.commands.IntakeCommands.intakeStandbyCommand;
 
 import edu.wpi.first.wpilibj.VictorSP;
 /**

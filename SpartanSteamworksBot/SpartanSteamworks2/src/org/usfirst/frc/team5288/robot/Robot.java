@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team5288.robot;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.command.Command;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team5288.robot.autoCommands.driveDistanceStraight;
 import org.usfirst.frc.team5288.robot.commands.*;
+import org.usfirst.frc.team5288.robot.commands.DriveCommands.DriveStraight;
 import org.usfirst.frc.team5288.robot.subsystems.*;
 
 import Accessories.ArduinoComms;
@@ -24,12 +26,12 @@ import Accessories.VisionCalculator;
  * directory.
  */
 public class Robot extends IterativeRobot {
-
 	/**
 	 * Robot objects, holds the subsystems, OI, and comms devices.
 	 */
 	public static final Drivetrain drivetrain = new Drivetrain();
 	public static final Intake intake = new Intake();
+	public static final Climber climber = new Climber();
 	public static final Shooter shooter= new Shooter();
 	public static final OI oi = new OI();
 	public static final ArduinoComms arduino = new ArduinoComms();
@@ -38,14 +40,16 @@ public class Robot extends IterativeRobot {
 	public static  VisionCalculator gearCalc =  new VisionCalculator();
 	
 	public int ultrasonicDistance = 0;
+	Command autonomousCommand;
 	/**
 	 * This function is run when the robot is first started up and should be
 	 * used for any initialization code.
 	 */
 	@Override
 	public void robotInit() {
-		chooser.addDefault("centerGearAuto", new driveDistanceStraight(100));
-		// chooser.addObject("My Auto", new MyAutoCommand());
+		CameraServer.getInstance().startAutomaticCapture();
+		chooser.addDefault("center gear", new driveDistanceStraight(100));
+	    chooser.addObject("left Gear", new DriveStraight());
 		SmartDashboard.putData("Auto mode", chooser);
 	}
 
@@ -56,7 +60,6 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void disabledInit() {
-
 	}
 
 	@Override
@@ -67,7 +70,7 @@ public class Robot extends IterativeRobot {
 		drivetrain.resetEncoders();
 		updateSubsystems();	
 	}
-
+	
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select
 	 * between different autonomous modes using the dashboard. The sendable
@@ -81,18 +84,16 @@ public class Robot extends IterativeRobot {
 	 */
 	@Override
 	public void autonomousInit() {
-		//autonomousCommand = chooser.getSelected();
 
-		/*
-		 * String autoSelected = SmartDashboard.getString("Auto Selector",
-		 * "Default"); switch(autoSelected) { case "My Auto": autonomousCommand
-		 * = new MyAutoCommand(); break; case "Default Auto": default:
-		 * autonomousCommand = new ExampleCommand(); break; }
-		 */
+		autonomousCommand = chooser.getSelected();
+
+		
+		
 
 		// schedule the autonomous command (example)
-		//if (autonomousCommand != null)
-		//	autonomousCommand.start();
+		if (autonomousCommand != null){
+			autonomousCommand.start();
+		}
 	}
 
 	/**
@@ -103,15 +104,17 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().run();
 		updateSubsystems();
 	}
-
+ 
 	@Override
 	public void teleopInit() {
 		// This makes sure that the autonomous stops running when
 		// teleop starts running. If you want the autonomous to
 		// continue until interrupted by another command, remove
 		// this line or comment it out.
-		//if (autonomousCommand != null)
-		///	autonomousCommand.cancel();
+		if (autonomousCommand != null)
+		{
+			autonomousCommand.cancel();
+		}
 		updateSubsystems();
 
 	}
@@ -136,12 +139,12 @@ public class Robot extends IterativeRobot {
 		drivetrain.update();
 		shooter.update();
 		intake.update();
+		climber.update();
 		arduino.changeMode(ArduinoComms.LightsMode.Red);
 		gearCalc.Updatedata();
 		//System.out.println("Gear peg distance(inches) = " + gearCalc.getDistance());
 		//climber.update();
 	}
-	
 	/**
 	 * A private method for parsing Ultrasonic data
 	 * 
@@ -161,8 +164,6 @@ public class Robot extends IterativeRobot {
 		//Parse the data and return the Double result
 		return Double.parseDouble(data.substring(data.lastIndexOf("R") + 1, data.lastIndexOf("\r")));
 	}*/
-	
-	
 	
 	
 	

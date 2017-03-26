@@ -3,7 +3,12 @@ package org.usfirst.frc.team5288.robot;
 import edu.wpi.first.wpilibj.buttons.JoystickButton;
 import edu.wpi.first.wpilibj.Joystick;
 
+import org.usfirst.frc.team5288.robot.ArduinoCommands.ToggleColor;
 import org.usfirst.frc.team5288.robot.commands.*;
+import org.usfirst.frc.team5288.robot.commands.ClimberCommands.RunClimber;
+import org.usfirst.frc.team5288.robot.commands.DriveCommands.switchDriveModes;
+import org.usfirst.frc.team5288.robot.commands.IntakeCommands.IntakeBalls;
+import org.usfirst.frc.team5288.robot.commands.ShooterCommands.ParkAndShoot;
 /**
  * This class is the glue that binds the controls on the physical operator
  * interface to the commands and command groups that allow control of the robot.
@@ -20,7 +25,7 @@ public class OI {
     
  	private JoystickButton btnL1 = new JoystickButton(joystickLeft,1),
  					btnLowThrottle = new JoystickButton(joystickLeft,2),
-					btnHighThrottle = new JoystickButton(joystickLeft,3),
+					btnToggleThrottle = new JoystickButton(joystickLeft,3),
 					btnDriveToPosition = new JoystickButton(joystickLeft,4),
 					btnL5 = new JoystickButton(joystickLeft,5),
 					btnL6 = new JoystickButton(joystickLeft,6),
@@ -38,13 +43,13 @@ public class OI {
 				btnR9 = new JoystickButton(joystickRight,9),
  				btnR10 = new JoystickButton(joystickRight,10),
  		 		btnR11 = new JoystickButton(joystickRight,1); 
- 	private JoystickButton xBoxB = new JoystickButton(xbox,0),
+ 	private JoystickButton xBoxB = new JoystickButton(xbox, 0),
 			 xboxA= new JoystickButton(xbox,1),
 			xboxY = new JoystickButton(xbox,2),
 			xboxX = new JoystickButton(xbox,3),
 			xboxLB = new JoystickButton(xbox,6),
 			xboxRB = new JoystickButton(xbox,7),
-			xboxStart = new JoystickButton(xbox,8);
+			xboxStart = new JoystickButton(xbox,4);
 			
 		 	
 
@@ -52,8 +57,11 @@ public class OI {
     {
    
     //Shooter Commands
-    btnR3.toggleWhenPressed(new ParkAndShoot());
+    btnR5.whileHeld(new RunClimber());
+    btnR3.whileHeld(new ParkAndShoot());
     btnR4.toggleWhenPressed(new IntakeBalls());
+    btnToggleThrottle.whenPressed(new switchDriveModes());
+    xboxStart.whenPressed(new ToggleColor());
    // btnR1.toggleWhenPressed(new DriveStraight());
     // There are a few additional built in buttons you can use. Additionally,
     // by subclassing Button you can create custom triggers and bind those to

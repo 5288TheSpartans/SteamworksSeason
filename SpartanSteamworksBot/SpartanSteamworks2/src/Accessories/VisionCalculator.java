@@ -41,7 +41,7 @@ public class VisionCalculator implements ITableListener{
 	}
 	public void Updatedata(){
 		System.out.println("Is Vision Running:" + isInitialized);
-		if(isInitialized)
+	/*	if(isInitialized)
 		{
 			loadData();
 			if(centerYs.length> 0 && centerYs[0] != 0)
@@ -61,7 +61,7 @@ public class VisionCalculator implements ITableListener{
 			{
 				isInitialized = false;
 			}
-		}
+		}*/
 	}
 	private void loadData(){
 		double[] defaultValue = new double[0];
@@ -71,11 +71,8 @@ public class VisionCalculator implements ITableListener{
 		heights = gripTable.getNumberArray("height",defaultValue);
 		centerYs = gripTable.getNumberArray("centerY",defaultValue);
 		centerXs = gripTable.getNumberArray("centerX",defaultValue);
-		System.out.println("CenterXs length : " + centerXs.length);
-		System.out.println("Widths length : "+ widths.length);
 		probabilities = new double[widths.length];
 		indexes = new int[widths.length];
-		System.out.println("");
 	}
 	public double getDistance(){
 		if(isfound)

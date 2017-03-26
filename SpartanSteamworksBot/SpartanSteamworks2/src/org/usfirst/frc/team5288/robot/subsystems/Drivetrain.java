@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.PIDController;
 import org.usfirst.frc.team5288.robot.Robot;
 import org.usfirst.frc.team5288.robot.RobotMap;
 import org.usfirst.frc.team5288.robot.commands.DriveCommands.ManualDrive;
-
+import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.Encoder;
 /**
  *
@@ -36,8 +36,16 @@ public class Drivetrain extends Subsystem {
 	private double throttle = 1;
 	private double lPower = 0;//Raw Power percentage being output to the left gearbox.
 	private double rPower = 0;//Raw Power percentage being output to the right gearbox.
+	//GYRO VARIABLES
+	private ADXRS450_Gyro gyro = new ADXRS450_Gyro(); 
+	private final double gyroCorrectionValue = -1.9923625000000003 +1.9959375000000001;
+	private double gyroCurrent = 0;
+	private double gyroDifference= 0;
+	private double gyroTotal = 0;
+	private double lastGyro = 0;
+	//**ULTRASONIC VARIABLES*
 	
-	//**ENCODER VARIABLES**
+	//**ENCODER VARIABLES*
 	private Encoder rEncoder ;
 	private Encoder lEncoder ;
 	
@@ -74,7 +82,7 @@ public class Drivetrain extends Subsystem {
 	// or B: runs off of the raw data being supplied to it, one of the two will always occur due to the default command.
 	public enum drivestates  {SetVelocity,MANUAL, AUTOPID};
 	private drivestates currentState = drivestates.MANUAL;
-	
+	private boolean isHighGear = true;
 	//VELOCITY PID variables
 	//Left
 	private double vProportionalL = 0;
@@ -105,13 +113,15 @@ public class Drivetrain extends Subsystem {
 	{
 		rEncoder = new Encoder(RobotMap.RDriveEncoder1,RobotMap.RDriveEncoder2,RobotMap.RDriveEncoderIndex,false);	
 		lEncoder = new Encoder(RobotMap.LDriveEncoder1,RobotMap.LDriveEncoder2,RobotMap.LDriveEncoderIndex,false);	
-		rEncoder.setMaxPeriod(1);
-		lEncoder.setMaxPeriod(1);
-		rEncoder.setSamplesToAverage(10);
-		lEncoder.setSamplesToAverage(10);		
-		rEncoder.setDistancePerPulse(1);
-		lEncoder.setDistancePerPulse(1);
-
+		rEncoder.setMaxPeriod(0.5);
+		lEncoder.setMaxPeriod(0.5);
+		rEncoder.setMinRate(0.001);
+		lEncoder.setMinRate(0.001);
+		rEncoder.setSamplesToAverage(3);
+		lEncoder.setSamplesToAverage(3);		
+		rEncoder.setDistancePerPulse(wheelcirc/encPPR);
+		lEncoder.setDistancePerPulse(wheelcirc/encPPR);
+		gyro.calibrate();
 	}
 	
 	//******************************DriveTrain Methods and Procedures******************************  
@@ -119,8 +129,16 @@ public class Drivetrain extends Subsystem {
 	public void initDefaultCommand() {
 		setDefaultCommand(new ManualDrive());
 	}
-	public void update()
+	public void update() 
 	{
+		lastGyro = gyroCurrent;
+		gyroCurrent = gyro.getAngle() - gyroCorrectionValue;
+		gyroDifference = gyroCurrent - gyroTotal;
+		gyroTotal = gyroTotal + gyroDifference;
+		//
+		System.out.println("Gyro gotten angle:" + gyro.getAngle());
+		System.out.println("TRUE GYRO ANGLE:" + gyroTotal);
+		System.out.println("Time  of Print : " +  System.currentTimeMillis());
 		updateSensorVals();
 		updateOutputs();
 		updateSmartDashboard();
@@ -157,6 +175,12 @@ public class Drivetrain extends Subsystem {
 		jerkL = (currentAccelL - lastAccelL)/timeDiff;
 		jerkR = (currentAccelR - lastAccelR)/timeDiff;
 
+	}
+	public double getGyroAngle(){
+		return gyroTotal;
+	}
+	public void resetGyro(){
+		gyro.reset();
 	}
 	private void updateOutputs(){
 		switch(currentState)
@@ -247,18 +271,23 @@ public class Drivetrain extends Subsystem {
 	}
 	public double getLeftDistanceMeters()
 	{
-		return lEncoder.get()*(wheelcirc/encPPR);
+		return lEncoder.get();
 	}
 	public double getRightDistanceMeters()
 	{
-		return rEncoder.get()*(wheelcirc/encPPR);
+		return rEncoder.get();
 	}
 	public void resetEncoders()//Should not need to be used except when changing control periods.
 	{
 		lEncoder.reset();
 		rEncoder.reset();
 	}
-
+	public void toggleHighGear(){
+		isHighGear=  !isHighGear;
+	}
+	public boolean getGearing(){
+		return isHighGear;
+	}
     private double rotationsTometers(double rotations) {
         return rotations * (wheelRadius * Math.PI);
     }

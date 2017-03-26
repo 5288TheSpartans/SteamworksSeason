@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.command.Command;
  *
  */
 public class ManualDrive extends Command {
-
+	double speedMulti = 0;
 	public ManualDrive() {
 		// Use requires() here to declare subsystem dependencies
 		// eg. requires();
@@ -38,10 +38,17 @@ public class ManualDrive extends Command {
 			
 		//
 		//Pure manual Joysticks drive 
+		if(Robot.drivetrain.getGearing()){
+			speedMulti = 1;
+		}
+		else
+		{
+			speedMulti = 0.6;
+		}
 		//Left Side 
 		if(Robot.oi.getLeftStickX() <= RobotMap.JOYSAFEZONE || Robot.oi.getLeftStickX() >= -RobotMap.JOYSAFEZONE)//checks if the joystick is in RobotMap.JOYSAFEZONE
 		{
-			Robot.drivetrain.setLPower(Robot.oi.getLeftStickY());
+			Robot.drivetrain.setLPower(speedMulti*Robot.oi.getLeftStickY());
 		}
 		else// if the joystick Y value is in the RobotMap.JOYSAFEZONE, sets the robot's left motor to 0 output
 		{
@@ -51,7 +58,7 @@ public class ManualDrive extends Command {
 		if(Robot.oi.getRightStickY() >= RobotMap.JOYSAFEZONE || Robot.oi.getRightStickY() <= -RobotMap.JOYSAFEZONE)//checks if the joystick is in RobotMap.JOYSAFEZONE
 		{
 			//sets the robots' right speed through a method declared in the drive subystem
-			Robot.drivetrain.setRPower(Robot.oi.getRightStickY());
+			Robot.drivetrain.setRPower(speedMulti*Robot.oi.getRightStickY());
 		}
 		else
 		{
