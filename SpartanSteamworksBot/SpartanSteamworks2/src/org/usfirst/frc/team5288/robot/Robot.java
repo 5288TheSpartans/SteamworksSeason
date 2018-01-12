@@ -49,7 +49,7 @@ public class Robot extends IterativeRobot {
 	public void robotInit() {
 		CameraServer.getInstance().startAutomaticCapture();
 		chooser.addDefault("center gear", new driveDistanceStraight(100));
-	    chooser.addObject("left Gear", new DriveStraight());
+	    chooser.addObject("DriveStraightInfinite", new DriveStraight());
 		SmartDashboard.putData("Auto mode", chooser);
 	}
 

@@ -2,12 +2,11 @@ package org.usfirst.frc.team5288.robot.subsystems;
 
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.VictorSP;
-import edu.wpi.first.wpilibj.PIDController;
-import org.usfirst.frc.team5288.robot.Robot;
 import org.usfirst.frc.team5288.robot.RobotMap;
 import org.usfirst.frc.team5288.robot.commands.DriveCommands.ManualDrive;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.CounterBase.EncodingType;
 import edu.wpi.first.wpilibj.Encoder;
 /**
  *
@@ -20,8 +19,8 @@ public class Drivetrain extends Subsystem {
 	 * Distance = Velocity1*time + 1/2*Acceleration*time^2 
 	 */
 	//**DRIVETRAIN CONSTANTS**
-	public final double wheelRadius = 0.0508; //meters
-	public final double wheelcirc = 2*Math.PI*wheelRadius; 
+	public final double wheelRadiusm = 0.0508; //meters
+	public final double wheelcirc = 4*Math.PI; 
 	public final double topSpeed =  3.048; // meters per second
 	public final double vfeedForward = 1/3.048; //meters per second
 	public final double kp = 0.04;
@@ -48,8 +47,8 @@ public class Drivetrain extends Subsystem {
 	private AnalogInput ultrasonic = new AnalogInput(RobotMap.ultrasonicInput);
 	private double ultraSonicDistance = 0;
 	//**ENCODER VARIABLES*
-	private Encoder rEncoder ;
-	private Encoder lEncoder ;
+	private Encoder rEncoder;
+	private Encoder lEncoder;
 
 
 	//**SPEED CALCULATION BASED VARIABLES**	//Encoder Tracking variables
@@ -85,6 +84,9 @@ public class Drivetrain extends Subsystem {
 	public enum drivestates  {SetVelocity,MANUAL, AUTOPID};
 	private drivestates currentState = drivestates.MANUAL;
 	private boolean isHighGear = true;
+	//SmartDashboard usage variables
+	public String PIDInput = "";
+	public String PIDOutput = "";
 	//VELOCITY PID variables
 	//Left
 	private double vProportionalL = 0;
@@ -113,16 +115,16 @@ public class Drivetrain extends Subsystem {
 	//******************************Instantiates the DRIVETRAIN SUBCLASS***************************
 	public Drivetrain()
 	{
-		rEncoder = new Encoder(RobotMap.RDriveEncoder1,RobotMap.RDriveEncoder2,RobotMap.RDriveEncoderIndex,false);	
-		lEncoder = new Encoder(RobotMap.LDriveEncoder1,RobotMap.LDriveEncoder2,RobotMap.LDriveEncoderIndex,false);	
-		rEncoder.setMaxPeriod(0.5);
-		lEncoder.setMaxPeriod(0.5);
-		rEncoder.setMinRate(0.001);
-		lEncoder.setMinRate(0.001);
-		rEncoder.setSamplesToAverage(3);
-		lEncoder.setSamplesToAverage(3);		
-		rEncoder.setDistancePerPulse(wheelcirc/encPPR);
-		lEncoder.setDistancePerPulse(wheelcirc/encPPR);
+		rEncoder = new Encoder(RobotMap.RDriveEncoder1,RobotMap.RDriveEncoder2,true,EncodingType.k4X);	
+		lEncoder = new Encoder(RobotMap.LDriveEncoder1,RobotMap.LDriveEncoder2,false,EncodingType.k4X);	
+		rEncoder.setMaxPeriod(5);
+		lEncoder.setMaxPeriod(5);
+		rEncoder.setMinRate(0);
+		lEncoder.setMinRate(0);
+		rEncoder.setSamplesToAverage(1);
+		lEncoder.setSamplesToAverage(1);		
+		rEncoder.setDistancePerPulse(wheelcirc/360);
+		lEncoder.setDistancePerPulse(wheelcirc/2048);
 		gyro.calibrate();
 	}
 
@@ -146,8 +148,8 @@ public class Drivetrain extends Subsystem {
 		updateSmartDashboard();
 	}
 	public void updateSensorVals(){
-		System.out.println("LeftDistance: "+getLeftDistanceMeters());
-		System.out.println("RightDistance: " + getRightDistanceMeters());
+		System.out.println("LeftDistance: "+getLeftDistanceInches());
+		System.out.println("RightDistance: " + getRightDistanceInches());
 		//Load last Values
 		lastSpeedL = currentSpeedL;
 		lastSpeedR = currentSpeedR;
@@ -159,10 +161,8 @@ public class Drivetrain extends Subsystem {
 
 		//Update Current Values
 		timeCurrent = System.currentTimeMillis();
-		encCurrentL = getLeftDistanceMeters();
-		encCurrentR = getRightDistanceMeters();
-		System.out.println("encCurrentL:" + lEncoder.getDistance());
-		System.out.println("encCurrentR:" +	rEncoder.getDistance());
+		encCurrentL = getLeftDistanceInches();
+		encCurrentR = getRightDistanceInches();
 
 		//******Calculate New Values*******
 		timeDiff = timeCurrent - timeLast;//Calculate time difference
@@ -177,20 +177,20 @@ public class Drivetrain extends Subsystem {
 		jerkL = (currentAccelL - lastAccelL)/timeDiff;
 		jerkR = (currentAccelR - lastAccelR)/timeDiff;
 		//***** ULTRASONIC VARIABLES
-		double ultrasonicValue = getUltraSonicValueData();
-		double ultrasonicVoltage = getUltraSonicVoltageData();
-		ultraSonicDistance = ultrasonicVoltage*(( 4.88/5)/0.92);
+		ultraSonicDistance = getUltraSonicVoltageData()*(( 4.88/5)/0.92)*39.283;
 		System.out.println("__________________________________________________________________________________");
-		System.out.println("Ultrasonic Voltage Data: " + ultrasonicVoltage*(( 4.88/5)/0.92));
 		System.out.println("TimeStamp:" + System.currentTimeMillis());
 
-		ultraSonicDistance = ultrasonicVoltage*(( 4.88/5)/0.92);
 	}
 	public double getGyroAngle(){
 		return gyroTotal;
 	}
 	public void resetGyro(){
 		gyro.reset();
+	}
+	public void resetEncoders(){
+		lEncoder.reset();
+		rEncoder.reset();
 	}
 	private void updateOutputs(){
 		switch(currentState)
@@ -219,6 +219,7 @@ public class Drivetrain extends Subsystem {
 			outputToMotors(outputL,outputR);
 			break;
 		case MANUAL:
+			//NO PID
 			outputToMotors(lPower,rPower); 
 			break;
 		case AUTOPID:
@@ -248,7 +249,7 @@ public class Drivetrain extends Subsystem {
 
 		}
 	}
-	private void setTargetSpeeds(double Left, double Right)//Sets the PID to control the robot.
+	public void setTargetSpeeds(double Left, double Right)//Sets the PID to control the robot.
 	{
 		currentState = drivestates.SetVelocity;
 		targetSpeedL = Left;
@@ -279,20 +280,14 @@ public class Drivetrain extends Subsystem {
 		currentState = drivestates.MANUAL;
 		rPower = power;
 	}
-	public double getLeftDistanceMeters()
+	public double getLeftDistanceInches()
 	{
-		return lEncoder.get();
+		return lEncoder.getDistance();
 	}
-	public double getRightDistanceMeters()
+	public double getRightDistanceInches()
 	{
-		return rEncoder.get();
+		return rEncoder.getDistance()*5.57;
 	}
-	public void resetEncoders()//Should not need to be used except when changing control periods.
-	{
-		lEncoder.reset();
-		rEncoder.reset();
-	}
-
 	//Gearing Procedures
 	public void toggleHighGear(){
 		isHighGear=  !isHighGear;
@@ -300,32 +295,13 @@ public class Drivetrain extends Subsystem {
 	public boolean getGearing(){
 		return isHighGear;
 	}
-
 	//UltraSonic Procedures
-	public double getUltraSonicValueData(){
-		return ultrasonic.getAverageValue();
-	}
-	public double getUltraSonicVoltageData(){
+	private double getUltraSonicVoltageData(){
 		return ultrasonic.getAverageVoltage();
 	}
-	public double getUltraSonicDistance(){
+	public double getUltraSonicDistanceInches(){
 		return ultraSonicDistance;
 	}
-
-	private double rotationsTometers(double rotations) {
-		return rotations * (wheelRadius * Math.PI);
-	}
-	private double rpmTometersPerSecond(double rpm) {
-		return rotationsTometers(rpm) / 60;
-	}
-	private double metersToRotations(double meters) {
-		return meters / (2* wheelRadius * Math.PI);
-	}
-	
-	private double metersPerSecondToRpm(double meters_per_second) {
-		return metersToRotations(meters_per_second) * 60;
-	}
-
 	private void updateSmartDashboard()
 	{
 		/*

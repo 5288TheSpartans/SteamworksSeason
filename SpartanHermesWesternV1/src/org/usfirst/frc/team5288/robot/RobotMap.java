@@ -24,10 +24,8 @@ public class RobotMap {
 		// Drivetrain Sensors (D I/O)
 		public static int LDriveEncoder1 = 0;
 		public static int LDriveEncoder2 = 1;
-		public static int LDriveEncoderIndex = 2;
 		public static int RDriveEncoder1 = 3;
 		public static int RDriveEncoder2 = 4;
-		public static int RDriveEncoderIndex = 5;
 		//Drivetrain PID Constants
 		public static double straightP = 0.6;
 		public static double straightI = 0;

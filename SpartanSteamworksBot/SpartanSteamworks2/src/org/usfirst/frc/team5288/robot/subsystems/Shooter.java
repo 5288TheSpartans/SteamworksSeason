@@ -1,11 +1,5 @@
 package org.usfirst.frc.team5288.robot.subsystems;
-
-import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.command.Subsystem;
-
-import java.util.Scanner;
-
-import org.usfirst.frc.team5288.robot.Robot;
 import org.usfirst.frc.team5288.robot.RobotMap;
 import org.usfirst.frc.team5288.robot.commands.ShooterCommands.StopShooter;
 
@@ -21,8 +15,6 @@ public class Shooter extends Subsystem {
 	// TALON SRX and encoder
 	public CANTalon shooterTalon = new CANTalon(RobotMap.ShooterMotor);
 	//Encoder Tracking variables
-	private double currentVoltage = 0;
-	private double encLast = 0;
 	private double encCurrent = 0;
 	//Time tracking
 	private double timeLast = 0;
@@ -75,7 +67,6 @@ public class Shooter extends Subsystem {
 		//Load last Values
 		lastSpeed = currentSpeed;
 		lastAccel = currentAccel;
-		encLast = encCurrent;
 		timeLast = timeCurrent;
 		//Update Current Values
 		timeCurrent = System.currentTimeMillis();
@@ -103,9 +94,7 @@ public class Shooter extends Subsystem {
 		shooterTalon.set(targetSpeed);
 
 	}
-	public void getShooterSpeedForDistance(){
 
-	}
 	public void setTargetSpeed(double newtargetspeed){
 		shooterTalon.changeControlMode(CANTalon.TalonControlMode.Speed);
 		targetSpeed = newtargetspeed;
@@ -116,45 +105,30 @@ public class Shooter extends Subsystem {
 	}
 
 	public double getSpeedForDistance(double distanceMeters){
-		double outputSpeed = 1111;
+		double outputSpeed = -1;
 		double distance = distanceMeters;
-		Scanner scan = new Scanner(System.in);
-		System.out.println("RUNNING");
-		while(true)
+		for(int i = 0;  i < availableDistances.length; i ++)
 		{
-			System.out.println("Restarting setup: enter a number");
-			distance = scan.nextDouble();
-			System.out.println("Searching: ");
-			for(int i = 0;  i < availableDistances.length; i ++)
+			if(availableDistances[i] >= distance)
 			{
-				if(availableDistances[i] < distance)
-				{
-
-					System.out.println("The preferred shooting speed is :" +  availableSpeeds[i]);
-
-				}
-				else
-				{
-					outputSpeed = availableSpeeds[i];
-					System.out.println("");
-					System.out.println("The REAL preferred shooting speed is :" + availableSpeeds[i]);
-					System.out.println("This was found at the index of : " + i +  " = " + availableDistances[i]);
-					System.out.println("");
-					i = availableDistances.length + 1;
-				}					
-				if (i ==  availableDistances.length- 1 )
-				{
-
-					System.out.println("Max Range was hit!:" + availableSpeeds[i]);
-					System.out.println("This was found at the index of : " + i +  " = " + availableDistances[i]);
-					System.out.println("");
-					outputSpeed = availableSpeeds[i];
-				}
-
+				outputSpeed = availableSpeeds[i];
+				System.out.println("");
+				System.out.println("The REAL preferred shooting speed is :" + availableSpeeds[i]);
+				System.out.println("This was found at the index of : " + i +  " = " + availableDistances[i]);
+				System.out.println("");
+				i = availableDistances.length + 1;
 			}
-			System.out.println("Seacrh Complete");
-			System.out.println("__________________________________________________________________________________________");
-			return outputSpeed;
+			if (i ==  availableDistances.length- 1 )
+			{
+
+				System.out.println("Max Range was hit!:" + availableSpeeds[i]);
+				System.out.println("This was found at the index of : " + i +  " = " + availableDistances[i]);
+				System.out.println("");
+				outputSpeed = availableSpeeds[i];
+			}
+
 		}
+		System.out.println("Seacrh Complete");
+		return outputSpeed;
 	}
 }
